@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [vue(), VitePWA({
     registerType: 'autoUpdate',
     injectRegister: false,
-
+    base: "/throat-bpm-trainer/",
     pwaAssets: {
       disabled: false,
       config: true,

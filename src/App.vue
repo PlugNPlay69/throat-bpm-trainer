@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import HelloWorld from "./components/HelloWorld.vue";
-import PWABadge from "./components/PWABadge.vue";
-
 import * as Tone from "tone";
 
 import { ref, computed } from "vue";
@@ -24,7 +21,7 @@ const speedChangeInterval = ref(20);
 
 const synth = new Tone.Synth().toDestination();
 
-function randomIntFromInterval(min, max) {
+function randomIntFromInterval(min: number, max: number) {
   // min and max included
   return Math.floor(Math.random() * (max - min + 1) + min);
 }
@@ -38,11 +35,10 @@ const loop = new Tone.Loop((time) => {
 }, "4n"); // '4n' means one loop per quarter note
 
 const running = ref(false);
-let stopSpeedChange = null;
-let stopClock = null;
+let stopSpeedChange: any = null;
+let stopClock: any = null;
 
 const goToRandomBpm = () => {
-  const old = currentBpm.value;
   currentBpm.value = randomIntFromInterval(minBpm.value, maxBpm.value);
   Tone.getTransport().bpm.rampTo(currentBpm.value, 3);
 };
