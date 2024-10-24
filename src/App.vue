@@ -1,11 +1,25 @@
 <script setup lang="ts">
+import PWABadge from "./components/PWABadge.vue";
 import * as Tone from "tone";
+import { Button } from "@/components/ui/button";
+import { Label } from "@/components/ui/label";
+import {
+  NumberField,
+  NumberFieldContent,
+  NumberFieldDecrement,
+  NumberFieldIncrement,
+  NumberFieldInput,
+} from "@/components/ui/number-field";
+import { Slider } from "@/components/ui/slider";
+import LabeledSlider from "./components/LabeledSlider.vue";
 
 import { ref, computed } from "vue";
 
 const currentBpm = ref(0);
-const minBpm = ref(12);
-const maxBpm = ref(120);
+const bpm = ref([12, 120]);
+const minBpm = computed(() => bpm.value[0]);
+const maxBpm = computed(() => bpm.value[1]);
+
 const durationMinutes = ref(2);
 const durationSeconds = computed(() => durationMinutes.value * 60);
 const currentSecond = ref(0);
@@ -17,6 +31,7 @@ const clockFace = computed(() => {
     String(minute).padStart(2, "0") + ":" + String(second).padStart(2, "0")
   );
 });
+
 const speedChangeInterval = ref(20);
 
 const synth = new Tone.Synth().toDestination();
@@ -75,19 +90,47 @@ const toggle = () => {
 </script>
 
 <template>
-  <p>Min BPM</p>
-  <input v-model="minBpm" type="number" min="6" max="300" />
-  <p>Max BPM</p>
-  <input v-model="maxBpm" type="number" min="6" max="300" />
-  <p>Speed Change Interval (s)</p>
-  <input v-model="speedChangeInterval" type="number" min="5" max="60" />
-  <p>Duration (min)</p>
-  <input v-model="durationMinutes" type="number" min="1" />
+  <div class="grid gap-5">
+    <div class="grid gap-3">
+      <div class="flex items-center justify-between">
+        <Label for="bpm">BPM Range</Label>
+        <span class="text-sm text-muted-foreground">
+          {{ bpm[0] }} - {{ bpm[1] }}
+        </span>
+      </div>
+      <Slider
+        id="bpm"
+        v-model="bpm"
+        :min="5"
+        :max="300"
+        :step="5"
+        aria-label="BPM Range"
+      />
+    </div>
 
-  <h3>Time Remaining: {{ clockFace }}</h3>
-  <h3>BPM {{ currentBpm }}</h3>
+    <LabeledSlider
+      text="Speed Change Interval (s)"
+      v-model="speedChangeInterval"
+      :min="5"
+      :max="60"
+      :step="5"
+    />
 
-  <button @click="toggle()">{{ running ? "Stop" : "Start" }}</button>
+    <LabeledSlider
+      text="Duration (min)"
+      v-model="durationMinutes"
+      :min="0.5"
+      :max="10"
+      :step="0.5"
+    />
+
+    <h3>Time Remaining: {{ clockFace }}</h3>
+    <h3>BPM: {{ currentBpm }}</h3>
+
+    <Button @click="toggle()">{{ running ? "Stop" : "Start" }}</Button>
+  </div>
+
+  <PWABadge />
 </template>
 
 <style scoped></style>
