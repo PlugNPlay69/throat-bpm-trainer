@@ -3,13 +3,6 @@ import PWABadge from "./components/PWABadge.vue";
 import * as Tone from "tone";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import {
-  NumberField,
-  NumberFieldContent,
-  NumberFieldDecrement,
-  NumberFieldIncrement,
-  NumberFieldInput,
-} from "@/components/ui/number-field";
 import { Slider } from "@/components/ui/slider";
 import LabeledSlider from "./components/LabeledSlider.vue";
 

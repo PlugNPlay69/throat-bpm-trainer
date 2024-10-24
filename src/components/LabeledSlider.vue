@@ -2,19 +2,19 @@
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 
-import { ref, computed } from "vue";
+import { computed } from "vue";
 
 const model = defineModel<number>();
 const sliderValue = computed<number[]>({
-  get() {
-    return [model.value];
+  get(): number[] {
+    return [model.value!];
   },
-  set(newVal) {
+  set(newVal: number[]) {
     model.value = newVal[0];
   },
 });
 
-const props = defineProps<{
+defineProps<{
   text: string;
   min: number;
   max: number;
