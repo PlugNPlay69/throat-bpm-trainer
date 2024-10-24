@@ -1,7 +1,7 @@
 enum BlockType {
-  'pause',
-  'hold',
-  'bpm'
+  Pause,
+  Hold,
+  BPM
 }
 
 interface Block {
