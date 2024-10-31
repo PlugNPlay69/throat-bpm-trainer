@@ -1,10 +1,10 @@
-enum BlockType {
-  Pause,
+export enum BlockType {
+  Break,
   Hold,
   BPM
 }
 
-interface Block {
+export interface Block {
   type: BlockType;
   durationS: number;
   bpm?: number;

@@ -1,44 +1,68 @@
 import { ref, computed } from "vue";
 import * as Tone from "tone";
+import { clamp, sleep } from "./utils";
+import { Block, BlockType } from "../lib/block.ts";
 
 export function usePlayer() {
-  const synth = new Tone.Synth().toDestination();
-  // Set the default BPM
-  Tone.getTransport().bpm.value = 1;
+  const ensureLoopRunning = (loop: Tone.Loop, running: boolean) => {
+    if (running) {
+      if (loop.state == "stopped")
+        loop.start();
+    } else {
+      if (loop.state == "started")
+        loop.stop();
+    }
+  }
 
-  // Define a loop to play a sound once every beat.
-  const loop = new Tone.Loop((time) => {
-    synth.triggerAttackRelease("C4", "24n", time);
-  }, "4n"); // '4n' means one loop per quarter note
-
-  const running = ref(false);
-  let stopSpeedChange: any = null;
-  let stopClock: any = null;
-
-  Tone.getTransport().bpm.rampTo(currentBpm.value, 3);
-
-  let currentBlock: Block | null = null;
-
-  const playBlock = (block: Block) => {
+  const playBlock = (block: Block, loop: Tone.Loop) => {
+    console.log("Playing Block: " + JSON.stringify(block))
     switch (block.type) {
       case BlockType.BPM:
-        if (currentBlock == null || currentBlock.type != BlockType.BPM) {
-          loop.start();
-          Tone.getTransport().start();
-        }
-
-        Tone.getTransport().bpm.value = block.bpm!;
+        ensureLoopRunning(loop, true);
+        Tone.getTransport().start();
+        Tone.getTransport().bpm.rampTo(block.bpm!, clamp(block.durationS / 5, 1, 5));
         break;
-      case BlockType.Pause:
-        if (currentBlock == null) {
-
-        }
+      case BlockType.Break:
+        Tone.getTransport().pause();
+        break;
       case BlockType.Hold:
         throw new Error("not implemented yet");
     }
-
-    currentBlock = block;
   }
+
+  const playBlocks = async (blocks: Block[]) => {
+    const synth = new Tone.Synth().toDestination();
+    // Set the default BPM
+    Tone.getTransport().bpm.value = 60;
+
+    // Define a loop to play a sound once every beat.
+    const loop = new Tone.Loop((time) => {
+      synth.triggerAttackRelease("C4", "24n", time);
+    }, "4n"); // '4n' means one loop per quarter note
+
+    const running = ref(true);
+    const currentBlock = ref(0);
+
+    while (running.value) {
+      console.log("we loopin boy")
+      const block = blocks[currentBlock.value];
+      playBlock(block, loop);
+      await sleep(block.durationS * 1000);
+      if (currentBlock.value == blocks.length - 1) { currentBlock.value = 0; }
+      else { currentBlock.value++; }
+    }
+
+    const stop = () => running.value = false;
+
+    return { stop, currentBlock };
+  }
+
+  return {
+    playBlocks
+  }
+
+  let stopSpeedChange: any = null;
+  let stopClock: any = null;
 
   const toggle = () => {
     if (running.value) {
