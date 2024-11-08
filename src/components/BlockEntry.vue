@@ -17,7 +17,9 @@ defineProps<{
           <div class="font-semibold">{{ BlockType[block.type] }}</div>
           <span v-if="active" class="flex h-2 w-2 rounded-full bg-blue-600" />
         </div>
-        <div class="ml-auto text-xs text-foreground">{{ block.duration }}s</div>
+        <div class="ml-auto text-xs text-foreground">
+          {{ block.durationS }}s
+        </div>
       </div>
 
       <div v-if="block.bpm" class="text-xs font-medium">
