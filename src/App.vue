@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import PWABadge from "./components/PWABadge.vue";
 import BlockPlayer from "./pages/BlockPlayer.vue";
-import RandomBpmSelfContained from "./pages/RandomBpmSelfContained.vue";
+// import RandomBpmSelfContained from "./pages/RandomBpmSelfContained.vue";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 </script>
 

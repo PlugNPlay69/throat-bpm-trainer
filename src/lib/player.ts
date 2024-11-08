@@ -1,4 +1,4 @@
-import { ref, computed, watchEffect, watch } from "vue";
+import { ref, watch } from "vue";
 import * as Tone from "tone";
 import { clamp, sleep } from "./utils";
 import { Block, BlockType } from "../lib/block.ts";

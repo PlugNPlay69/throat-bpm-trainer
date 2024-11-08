@@ -2,7 +2,6 @@
 import { Block, BlockType } from "../lib/block.ts";
 import { Button } from "@/components/ui/button";
 import BlockList from "@/components/BlockList.vue";
-import { ref, computed } from "vue";
 import { usePlayer } from "../lib/player.ts";
 
 const { start, stop, isRunning, currentBlock, blocks } = usePlayer();

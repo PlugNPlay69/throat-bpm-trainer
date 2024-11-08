@@ -1,11 +1,11 @@
 <
 <script setup lang="ts">
-import { Block, BlockType } from "../lib/block.ts";
+import { Block } from "../lib/block.ts";
 import BlockEntry from "../components/BlockEntry.vue";
 
 defineProps<{
   blocks: Block[];
-  currentBlock: int;
+  currentBlock: number | null;
 }>();
 </script>
 
