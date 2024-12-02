@@ -6,7 +6,8 @@ export enum BlockType {
 
 export interface Block {
   type: BlockType;
-  durationS: number;
+  durationS?: number;
   bpm?: number;
+  nTotal?: number;
 }
 

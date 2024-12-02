@@ -1,12 +1,13 @@
 import { ref, watch } from "vue";
 import * as Tone from "tone";
-import { clamp, sleep } from "./utils";
+import { clamp, sleep, sleepUntilValue } from "./utils";
 import { Block, BlockType } from "../lib/block.ts";
 
 export function usePlayer() {
   const isRunning = ref(false);
   const blocks = ref([] as Block[]);
   const currentBlock = ref(null as (null | number));
+  const currentCount = ref(0);
 
   // ensure currentBlock is always in range or null
   watch(blocks, (blocks, _prev) => {
@@ -45,7 +46,7 @@ export function usePlayer() {
         transport.start();
         const bpm = block.bpm!;
         if (bpm > transport.bpm.value) {
-          transport.bpm.rampTo(bpm, clamp(block.durationS / 5, 1, 5));
+          transport.bpm.rampTo(bpm, clamp(block.durationS ?? 5 / 5, 1, 5));
         } else {
           transport.bpm.value = bpm;
         }
@@ -69,21 +70,27 @@ export function usePlayer() {
 
     const synth = new Tone.Synth().toDestination();
 
-    // Define a loop to play a sound once every beat.
-    const loop = new Tone.Loop((time) => {
-      synth.triggerAttackRelease("C4", "24n", time);
-    }, "4n"); // '4n' means one loop per quarter note
-
     if (currentBlock.value == null) {
       currentBlock.value = 0;
     }
 
+    // Define a loop to play a sound once every beat.
+    const loop = new Tone.Loop((time) => {
+      synth.triggerAttackRelease("C4", "24n", time);
+      currentCount.value++;
+    }, "4n"); // '4n' means one loop per quarter note
+
     while (isRunning.value) {
+      currentCount.value = 0;
       const block = blocks.value[currentBlock.value];
       playBlock(block, loop);
 
       try {
-        await sleep(block.durationS * 1000, isRunning);
+        if (block.nTotal) {
+          await sleepUntilValue(currentCount, block.nTotal, isRunning);
+        } else if (block.durationS) {
+          await sleep(block.durationS * 1000, isRunning);
+        }
       }
       catch (e) {
         console.log((e as Error)?.message);
